@@ -1,0 +1,53 @@
+Elm.DynamicCounterList = Elm.DynamicCounterList || {};
+Elm.DynamicCounterList.make = function (_elm) {
+   "use strict";
+   _elm.DynamicCounterList = _elm.DynamicCounterList || {};
+   if (_elm.DynamicCounterList.values) return _elm.DynamicCounterList.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Counter = Elm.Counter.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var _op = {};
+   var changeCounter = F3(function (id,change,counter) {    var _p0 = counter;var counterID = _p0._0;return _U.eq(id,counterID) ? change(counter) : counter;});
+   var update = F2(function (action,model) {
+      var _p1 = action;
+      switch (_p1.ctor)
+      {case "Add": return {counters: A2($List._op["::"],{ctor: "_Tuple2",_0: model.nextID,_1: $Counter.init(0)},model.counters),nextID: model.nextID + 1};
+         case "Remove": var _p2 = model.counters;
+           if (_p2.ctor === "::") {
+                 return {counters: _p2._1,nextID: model.nextID - 1};
+              } else {
+                 return model;
+              }
+         default: var applyAction = F2(function (action,_p3) {    var _p4 = _p3;return {ctor: "_Tuple2",_0: _p4._0,_1: A2($Counter.update,action,_p4._1)};});
+           return _U.update(model,{counters: A2($List.map,A2(changeCounter,_p1._0,applyAction(_p1._1)),model.counters)});}
+   });
+   var Modify = F2(function (a,b) {    return {ctor: "Modify",_0: a,_1: b};});
+   var viewCounter = F2(function (address,_p5) {    var _p6 = _p5;return A2($Counter.view,A2($Signal.forwardTo,address,Modify(_p6._0)),_p6._1);});
+   var Remove = {ctor: "Remove"};
+   var Add = {ctor: "Add"};
+   var view = F2(function (address,model) {
+      var insert = A2($Html.button,_U.list([A2($Html$Events.onClick,address,Add)]),_U.list([$Html.text("Add")]));
+      var remove = A2($Html.button,_U.list([A2($Html$Events.onClick,address,Remove)]),_U.list([$Html.text("Remove")]));
+      var counters = A2($List.map,viewCounter(address),model.counters);
+      return A2($Html.div,_U.list([]),A2($Basics._op["++"],_U.list([remove,insert]),counters));
+   });
+   var init = F2(function (counters,id) {    return {counters: counters,nextID: id};});
+   var Model = F2(function (a,b) {    return {counters: a,nextID: b};});
+   return _elm.DynamicCounterList.values = {_op: _op
+                                           ,Model: Model
+                                           ,init: init
+                                           ,Add: Add
+                                           ,Remove: Remove
+                                           ,Modify: Modify
+                                           ,changeCounter: changeCounter
+                                           ,update: update
+                                           ,view: view
+                                           ,viewCounter: viewCounter};
+};
